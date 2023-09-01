@@ -3,7 +3,7 @@
 const uploadUtil = require('../../common/utils/upload-util2');
 
 module.exports = function(Model, Options) {
-  require('./upload2')(Model, Options);
+  require('./upload2/')(Model, Options);
 
   Options.keepValue = Options.keepValue || true;
 
