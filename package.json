@@ -3,8 +3,8 @@
   "version": "0.0.2",
   "main": "server/server.js",
   "scripts": {
-    "lint": "eslint .",
-    "start": "node .",
+    "lint": "eslint src",
+    "start": "node src",
     "posttest": "npm run lint && nsp check"
   },
   "dependencies": {

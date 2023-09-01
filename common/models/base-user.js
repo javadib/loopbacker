@@ -11,7 +11,7 @@ module.exports = function(BaseUser) {
   const step = 120;
   let settings = BaseUser.definition.settings;
 
-  require('./base-user/')(BaseUser);
+  require('./base-user')(BaseUser);
 
   BaseUser.generateCode = function() {
     var code = speakeasy.totp({
