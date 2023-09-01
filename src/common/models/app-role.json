@@ -1,0 +1,24 @@
+{
+  "name": "AppRole",
+  "base": "Role",
+  "strict": true,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "autoMigrate": true
+  },
+  "mixins": {
+    "Default": true
+  },
+  "hidden": [],
+  "properties": {
+    "description": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

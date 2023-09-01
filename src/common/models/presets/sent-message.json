@@ -1,0 +1,59 @@
+{
+  "name": "SentMessage",
+  "base": "BaseModel",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "mixins":{
+   "ReadOnly":{
+     "isRead": true,
+     "readDate": true
+   },
+   "Inject": [
+     {
+        "method": {
+          "name": "read",
+          "updateTo": {"isRead": true, "readDate" : "$now"},
+          "http": {"path": "/:id/read", "verb": "post"}
+        }
+     },
+     {
+        "method": {
+          "name": "unRead",
+          "updateTo": {"isRead": false, "readDate" : null},
+          "http": {"path": "/:id/unRead", "verb": "post"}
+        }
+     }
+   ]
+  },
+  "properties": {
+    "title": {
+      "type": "string",
+      "trim": true,
+      "lowercase": true,
+      "required": true
+    },
+    "body": {
+      "type": "string",
+      "required": true
+    },
+    "isRead": {
+      "type": "string"
+    },
+    "readDate": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "user":{
+      "type": "belongsTo",
+      "model" : "AppUser",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

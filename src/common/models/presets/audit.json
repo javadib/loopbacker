@@ -1,0 +1,80 @@
+{
+  "name": "Audit",
+  "base": "BaseModel",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "displayName": "عملکرد کاربران",
+    "aclOption": true
+  },
+  "mixins": {
+    "Default": true,
+    "ReadOnly": {
+      "UserIp": true
+    }
+  },
+  "properties": {
+    "model": {
+      "type": "string",
+      "required": true,
+      "display": {
+        "name": "مدل",
+        "scaffold": false,
+        "editable": "Textbox"
+      }
+    },
+    "modelId": {
+      "type": "string",
+      "required": true,
+      "display": {
+        "name": "متد",
+        "scaffold": false,
+        "editable": "Textbox"
+      }
+    },
+    "UserIp": {
+      "type": "string",
+      "display": {
+        "name": "ای پی",
+        "scaffold": true,
+        "editable": "Textbox"
+      }
+    },
+    "changes": {
+      "type": "string",
+      "display": {
+        "name": "ای پی",
+        "scaffold": true,
+        "editable": "Textbox"
+      }
+    },
+    "EndTime": {
+      "type": "date",
+      "display": {
+        "name": "تاریخ اتمام",
+        "scaffold": true,
+        "editable": "Textbox"
+      }
+    },
+    "Description": {
+      "type": "string",
+      "required": false,
+      "display": {
+        "name": "توضیحات",
+        "scaffold": true,
+        "editable": "Textbox"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "user": {
+      "type": "belongsTo",
+      "model": "AppUser",
+      "foreignKey": "UserId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

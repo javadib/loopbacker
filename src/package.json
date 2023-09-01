@@ -1,0 +1,27 @@
+{
+  "name": "loopbacker",
+  "version": "0.0.2",
+  "main": "server/server.js",
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node .",
+    "posttest": "npm run lint && nsp check"
+  },
+  "dependencies": {
+    "async": "^2.1.4",
+    "speakeasy": "^2.0.0",
+    "moment-jalaali": "latest"
+  },
+  "devDependencies": {
+    "eslint": "^2.13.1",
+    "eslint-config-loopback": "^4.0.0",
+    "nsp": "^2.1.0",
+    "loopback-ds-computed-mixin": "^1.0.5"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "license": "UNLICENSED",
+  "description": "loopbacker submodule for loopback framework"
+}
