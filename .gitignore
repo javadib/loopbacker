@@ -62,3 +62,4 @@ Thumbs.db
 
 # vi swap files
 *.swp
+/package-lock.json
