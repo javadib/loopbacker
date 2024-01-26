@@ -7,8 +7,7 @@ module.exports = function(Model, options) {
     let app = Model.app;
     const userId = ctx.options.userId || app.locals.userId;
     const keepId = ctx.options.keepId === true ||
-      (ctx.Model.definition.settings &&
-        ctx.Model.definition.settings.keepId === true);
+      (ctx.Model.definition.settings?.keepId === true);
 
     if (ctx.isNewInstance) {
       model.createdBy = userId;
