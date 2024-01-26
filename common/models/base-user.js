@@ -251,6 +251,10 @@ module.exports = function(BaseUser) {
         console.log(include);
         var needRole = Array.isArray(include) ? include.indexOf('role') > -1 : include === 'role';
 
+        if (settings.mobileVerificationRequired && !user.mobileVerified) {
+          return fn(error.validateError(error.codes.MOBILE_NOT_VERIFIED, {code: 'MOBILE_NOT_VERIFIED'}));
+        }
+
         if (!needRole) return fn(null, token);
 
         UserModel.app.models.RoleMapping.findOne({

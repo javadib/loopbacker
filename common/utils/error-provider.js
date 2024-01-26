@@ -179,6 +179,7 @@ err.codes = {
   "OBJECT_NTO_ACTIVATED": '%s قعال نیست.',
   "COUPON_AT_LEAST_MIN_PAY_PRICE": 'حداقل مبلغ خرید برای استقاده از این تخفیف %f تومان است.',
   "OBJECT_NOT_FOUND": '%s یافت نشد.',
+  "MOBILE_NOT_VERIFIED": 'شماره موبایل شما تایید نشده است. لطفا ابتدا آن را تایید کنید.',
   "ACCOUNT_DEACTIVATE": 'حساب شما موقتا غیرفعال شده است. لطفا با تیم پشتیبان تماس حاصل نمایید.',
   "VALUE_LESS_THAN": '%s نمی تواند کوچکتر از %s باشد.',
   'VALUE_GREAT_THAN': '%s نمی تواند بزرگتر از %s باشد.',
