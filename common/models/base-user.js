@@ -8,7 +8,7 @@ const secret = speakeasy.generateSecret();
 const error = require('../utils/error-provider.js');
 
 module.exports = function(BaseUser) {
-  const step = 120;
+  const step = 60;
   let settings = BaseUser.definition.settings;
 
   require('./base-user/')(BaseUser);
@@ -17,6 +17,7 @@ module.exports = function(BaseUser) {
     var code = speakeasy.totp({
       secret: secret.base32,
       encoding: 'base32',
+      digits: 4,
       window: 6,
       step: step,
     });
