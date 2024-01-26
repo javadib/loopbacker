@@ -52,10 +52,11 @@ module.exports = function(BaseUser) {
         user.createRoleByName(roleName);
       }
 
-      if (settings.activationEmail) {
+      const authentication = Model.definition.settings.authentication;
+      if (authentication && authentication.sendActivationCode) {
         let code = BaseUser.generateCode();
 
-        Model.emit('userSaved', {user: user, activationCode: code});
+        Model.emit('userCreated', {user: user, activationCode: code});
       }
     }
 
