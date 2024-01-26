@@ -30,8 +30,9 @@ module.exports = function(BaseUser) {
       secret: secret.base32,
       encoding: 'base32',
       token: token,
+      digits: 4,
       window: 6,
-      step: 120,
+      step: step,
     });
   };
 
