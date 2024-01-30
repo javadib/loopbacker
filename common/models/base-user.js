@@ -7,25 +7,23 @@ const secret = speakeasy.generateSecret();
 
 const error = require('../utils/error-provider.js');
 
-module.exports = function(BaseUser) {
+module.exports = function (BaseUser) {
   const step = 60;
   let settings = BaseUser.definition.settings;
 
   require('./base-user/')(BaseUser);
 
-  BaseUser.generateCode = function() {
-    var code = speakeasy.totp({
+  BaseUser.generateCode = function () {
+    return speakeasy.totp({
       secret: secret.base32,
       encoding: 'base32',
       digits: 4,
       window: 6,
       step: step,
     });
-
-    return code;
   };
 
-  BaseUser.verifyCode = function(token) {
+  BaseUser.verifyCode = function (token) {
     return speakeasy.totp.verify({
       secret: secret.base32,
       encoding: 'base32',
@@ -36,7 +34,7 @@ module.exports = function(BaseUser) {
     });
   };
 
-  BaseUser.observe('after save', function(ctx, next) {
+  BaseUser.observe('after save', function (ctx, next) {
     let Model = ctx.Model;
     let user = ctx.instance || ctx.data;
 
@@ -65,7 +63,7 @@ module.exports = function(BaseUser) {
     next();
   });
 
-  BaseUser.setup = function() {
+  BaseUser.setup = function () {
     BaseUser.base.setup.call(this);
     var UserModel = this;
     let settings = UserModel.definition.settings;
@@ -74,20 +72,20 @@ module.exports = function(BaseUser) {
     // UserModel.validatesUniquenessOf('username', {message: 'username already exist.'});
 
     UserModel.activatedData = {};
-    UserModel.prototype.isActiveUser = function() {
+    UserModel.prototype.isActiveUser = function () {
       var user = this;
 
       return user.isActive;
     };
 
-    UserModel.createAccessToken = function(user, isPersist) {
+    UserModel.createAccessToken = function (user, isPersist) {
       let data = {ttl: settings.ttl || 1209600, isPersist: isPersist};
       user.accessTokens.create(data)
         .then(token => console.log(`the accessToken ${token.id} created for ${user.email || user.username}.`),
           console.error);
     };
 
-    UserModel.prototype.createUserRole = function(role, user, cb) {
+    UserModel.prototype.createUserRole = function (role, user, cb) {
       user.roleMappings.create({
         principalType: 'USER',
         roleId: role.id,
@@ -98,7 +96,7 @@ module.exports = function(BaseUser) {
       }, console.error);
     };
 
-    UserModel.prototype.changeRole = function(roleOption, cb) {
+    UserModel.prototype.changeRole = function (roleOption, cb) {
       let user = this;
 
       if (!roleOption.newRole) {
@@ -112,7 +110,7 @@ module.exports = function(BaseUser) {
       })
     };
 
-    UserModel.prototype.createRoleByName = function(roleName, cb) {
+    UserModel.prototype.createRoleByName = function (roleName, cb) {
       let user = this;
 
       UserModel.app.models.Role.findOrCreate({where: {name: roleName}}, {name: roleName})
@@ -121,7 +119,7 @@ module.exports = function(BaseUser) {
         }, console.error);
     };
 
-    UserModel.setter.email = function(value) {
+    UserModel.setter.email = function (value) {
       this.$email = value;
       if (UserModel.settings.resolveGmailAccount && this.$email) {
         var emailObject = this.$email.split('@');
@@ -136,7 +134,7 @@ module.exports = function(BaseUser) {
     };
 
     //send password reset link when requested
-    UserModel.on('resetPasswordRequest', function(info) {
+    UserModel.on('resetPasswordRequest', function (info) {
 
       UserModel.sendForgotPassword ?
         UserModel.sendForgotPassword(info) :
@@ -151,7 +149,7 @@ module.exports = function(BaseUser) {
      * @param  {Function} cb          The function to call in the Loopback for sending back data
      * @return {void}
      */
-    UserModel.loginWithCode = function(credentials, cb) {
+    UserModel.loginWithCode = function (credentials, cb) {
       var defaultError = new Error(error.codes.LOGIN_FAILED);
       defaultError.statusCode = 422;
 
@@ -165,7 +163,7 @@ module.exports = function(BaseUser) {
       var query = credentials.email ? {email: credentials.email} : {username: credentials.username};
       let filter = {where: query, include: ['roles']};
 
-      this.findOne(filter, function(err, user) {
+      this.findOne(filter, function (err, user) {
         if (err) return cb(err);
 
         if (!user) {
@@ -189,7 +187,7 @@ module.exports = function(BaseUser) {
         let data = UserModel.activatedData;
         data.isActive = undefined;
         delete data.isActive;
-        UserModel.update({id: user.id}, data, function(err, afftected) {
+        UserModel.update({id: user.id}, data, function (err, afftected) {
           if (err) return cb(err);
 
           user.createAccessToken(settings.ttl).then(token => {
@@ -238,8 +236,8 @@ module.exports = function(BaseUser) {
       },
     );
 
-    UserModel.authenticate = function(credentials, include, fn) {
-      UserModel.login(credentials, ['user', 'roles'], function(err, token) {
+    UserModel.authenticate = function (credentials, include, fn) {
+      UserModel.login(credentials, ['user', 'roles'], function (err, token) {
         if (err) {
           err.statusCode = 422; // for pass logic error
           return fn(err);
@@ -260,7 +258,7 @@ module.exports = function(BaseUser) {
         UserModel.app.models.RoleMapping.findOne({
           where: {principalId: token.userId},
           include: 'role',
-        }, function(err, principal) {
+        }, function (err, principal) {
           if (err) return fn(err);
 
           token.userCode = principal && principal.__data && principal.__data.role.name;
@@ -317,7 +315,7 @@ module.exports = function(BaseUser) {
      * @param  {Function} fn          The function to call in the Loopback for sending back data
      * @return {Function}
      */
-    UserModel.requestCode = function(credentials, fn) {
+    UserModel.requestCode = function (credentials, fn) {
       var now = new Date();
       credentials = credentials || {};
       credentials.options = credentials.options || {};
@@ -345,7 +343,7 @@ module.exports = function(BaseUser) {
 
       var query = credentials.email ? {email: credentials.email} : {username: credentials.username};
       let filter = {where: query};
-      this.findOne(filter, function(err, user) {
+      this.findOne(filter, function (err, user) {
         if (err) return fn(err);
 
         if (!user) {
