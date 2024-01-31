@@ -8,7 +8,7 @@ const secret = speakeasy.generateSecret();
 const error = require('../utils/error-provider.js');
 
 module.exports = function (BaseUser) {
-  const step = 60;
+  const globalStep = 120;
   let settings = BaseUser.definition.settings;
 
   require('./base-user/')(BaseUser);
@@ -19,7 +19,7 @@ module.exports = function (BaseUser) {
       encoding: 'base32',
       digits: 4,
       window: 6,
-      step: step,
+      step: globalStep,
     });
   };
 
@@ -30,7 +30,7 @@ module.exports = function (BaseUser) {
       token: token,
       digits: 4,
       window: 6,
-      step: step,
+      step: globalStep,
     });
   };
 
@@ -332,7 +332,7 @@ module.exports = function (BaseUser) {
           activationCode: token,
         });
 
-        return fn(null, {creationTime: now.getTime(), expireInSecond: step});
+        return fn(null, {creationTime: now.getTime(), expireInSecond: globalStep});
       }
 
       if (!credentials.email && !credentials.username) {
@@ -360,33 +360,33 @@ module.exports = function (BaseUser) {
           activationCode: token,
         });
 
-        fn(null, {creationTime: now.getTime(), expireInSecond: step});
+        fn(null, {creationTime: now.getTime(), expireInSecond: globalStep});
       });
     };
 
-    // UserModel.remoteMethod(
-    //   'requestCode',
-    //   {
-    //     description: 'Request a two-factor code for a user with email and password',
-    //     accepts: [
-    //       {
-    //         arg: 'credentials',
-    //         type: 'Credential',
-    //         required: true,
-    //         http: {source: 'body'},
-    //       },
-    //     ],
-    //     meta: {
-    //       title: 'Request OTP token.',
-    //       subtitle: 'Request a two-factor code.',
-    //       permission: {},
-    //       auditLog: {},
-    //       userLog: {},
-    //     },
-    //     returns: {arg: 'timestamp', type: 'string'},
-    //     http: {verb: 'post'},
-    //   },
-    // );
+    UserModel.remoteMethod(
+      'requestCode',
+      {
+        description: 'Request a two-factor code for a user with email and password',
+        accepts: [
+          {
+            arg: 'credentials',
+            type: 'Credential',
+            required: true,
+            http: {source: 'body'},
+          },
+        ],
+        meta: {
+          title: 'Request OTP token.',
+          subtitle: 'Request a two-factor code.',
+          permission: {},
+          auditLog: {},
+          userLog: {},
+        },
+        returns: {arg: 'timestamp', type: 'string'},
+        http: {verb: 'post'},
+      },
+    );
 
     return UserModel;
   };
