@@ -8,7 +8,7 @@ const secret = speakeasy.generateSecret();
 const error = require('../utils/error-provider.js');
 
 module.exports = function (BaseUser) {
-  const step = 60;
+  const step = 120;
   let settings = BaseUser.definition.settings;
 
   require('./base-user/')(BaseUser);
@@ -364,29 +364,29 @@ module.exports = function (BaseUser) {
       });
     };
 
-    // UserModel.remoteMethod(
-    //   'requestCode',
-    //   {
-    //     description: 'Request a two-factor code for a user with email and password',
-    //     accepts: [
-    //       {
-    //         arg: 'credentials',
-    //         type: 'Credential',
-    //         required: true,
-    //         http: {source: 'body'},
-    //       },
-    //     ],
-    //     meta: {
-    //       title: 'Request OTP token.',
-    //       subtitle: 'Request a two-factor code.',
-    //       permission: {},
-    //       auditLog: {},
-    //       userLog: {},
-    //     },
-    //     returns: {arg: 'timestamp', type: 'string'},
-    //     http: {verb: 'post'},
-    //   },
-    // );
+    UserModel.remoteMethod(
+      'requestCode',
+      {
+        description: 'Request a two-factor code for a user with email and password',
+        accepts: [
+          {
+            arg: 'credentials',
+            type: 'Credential',
+            required: true,
+            http: {source: 'body'},
+          },
+        ],
+        meta: {
+          title: 'Request OTP token.',
+          subtitle: 'Request a two-factor code.',
+          permission: {},
+          auditLog: {},
+          userLog: {},
+        },
+        returns: {arg: 'timestamp', type: 'string'},
+        http: {verb: 'post'},
+      },
+    );
 
     return UserModel;
   };
