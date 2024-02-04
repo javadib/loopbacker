@@ -167,7 +167,7 @@ module.exports = function (BaseUser) {
         if (err) return cb(err);
 
         if (!user) {
-          defaultError.code = 'EMAIL_NOT_FOUND';
+          defaultError.code = 'USER_NOT_FOUND';
           defaultError.message += util.format(error.codes.OBJECT_NOT_FOUND, 'ایمیل یا نام کاربری');
           defaultError.localized = true;
 
@@ -199,7 +199,7 @@ module.exports = function (BaseUser) {
 
             token.__data.user = user;
 
-            UserModel.emit('loggedWithCode', {user: user, token: token});
+            UserModel.emit('loggedInWithCode', {user: user, token: token});
 
             cb(null, token);
           }, cb);
