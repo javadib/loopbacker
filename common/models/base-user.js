@@ -149,13 +149,14 @@ module.exports = function (BaseUser) {
      * @param  {Function} cb          The function to call in the Loopback for sending back data
      * @return {void}
      */
-    UserModel.loginWithCode = function (credentials, cb) {
-      var defaultError = new Error(error.codes.LOGIN_FAILED);
+    UserModel.loginWithCode = function (ctx, credentials, cb) {
+      let inDev = ctx.req.query?.inDev;
+      let defaultError = new Error(error.codes.LOGIN_FAILED);
       defaultError.statusCode = 422;
 
       if ((!credentials.email && !credentials.username) || !credentials.token) {
         defaultError.code = 'CREDENTIAL_REQUIRED';
-        defaultError.message += util.format(error.codes.OBJECT_REQUIRED, 'ایمیل یا نام کاربری');
+        defaultError.message += util.format(error.codes.OBJECT_REQUIRED, 'نام کاربری و توکن');
 
         return cb(defaultError);
       }
@@ -174,11 +175,11 @@ module.exports = function (BaseUser) {
           return cb(defaultError);
         }
 
-        var tokenValidates = BaseUser.verifyCode(credentials.token);
+        var tokenValidates = inDev ? true : BaseUser.verifyCode(credentials.token);
 
         if (!tokenValidates) {
           defaultError.code = 'ACTIVE_CODE_INCORRECT';
-          defaultError.message += error.codes.OBJECT_IS_INCORRECT;
+          defaultError.message += util.format(error.codes.OBJECT_IS_INCORRECT, 'توکن وارد شده');
           defaultError.localized = true;
 
           return cb(defaultError);
@@ -212,12 +213,8 @@ module.exports = function (BaseUser) {
       {
         description: 'Login a user with email and two-factor code',
         accepts: [
-          {
-            arg: 'credentials',
-            type: 'Credential',
-            required: true,
-            http: {source: 'body'},
-          },
+          {arg: "ctx", type: "object", http: {source: "context"}},
+          {arg: 'credentials', type: 'Credential', required: true, http: {source: 'body'}},
         ],
         returns: {
           arg: 'accessToken',
