@@ -185,24 +185,22 @@ module.exports = function (BaseUser) {
           return cb(defaultError);
         }
 
-        let data = {isActive: true, mobileVerified: true};
-        UserModel.update({id: user.id}, data, function (err, afftected) {
-          if (err) return cb(err);
+        user.isActive = true;
+        user.mobileVerified = true;
+        return user.createAccessToken(settings.ttl).then(token => {
+          let roles = user.__cachedRelations.roles;
+          if (roles && Array.isArray(roles) && roles.length > 0) {
+            user.__data.roleName = roles && roles[0].name;
+            user.__data.roles = undefined;
+          }
 
-          user.createAccessToken(settings.ttl).then(token => {
-            let roles = user.__cachedRelations.roles;
-            if (roles && Array.isArray(roles) && roles.length > 0) {
-              user.__data.roleName = roles && roles[0].name;
-              user.__data.roles = undefined;
-            }
+          token.__data.user = user;
 
-            token.__data.user = user;
+          UserModel.emit('loggedInWithCode', {user: user, token: token});
 
-            UserModel.emit('loggedInWithCode', {user: user, token: token});
+          cb(null, token);
+        }, cb);
 
-            cb(null, token);
-          }, cb);
-        });
       });
     };
 
