@@ -185,9 +185,7 @@ module.exports = function (BaseUser) {
           return cb(defaultError);
         }
 
-        let data = UserModel.activatedData;
-        data.isActive = undefined;
-        delete data.isActive;
+        let data = {isActive: true, mobileVerified: true};
         UserModel.update({id: user.id}, data, function (err, afftected) {
           if (err) return cb(err);
 
