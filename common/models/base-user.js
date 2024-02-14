@@ -47,7 +47,7 @@ module.exports = function (BaseUser) {
       if (userOption) BaseUser.createAccessToken(user, userOption.isPersist === true);
 
       if (role) {
-        user.createUserRole(role, user);
+        user.createUserRole(role);
       } else if (roleName) {
         user.createRoleByName(roleName);
       }
@@ -85,7 +85,8 @@ module.exports = function (BaseUser) {
           console.error);
     };
 
-    UserModel.prototype.createUserRole = function (role, user, cb) {
+    UserModel.prototype.createUserRole = function (role, cb) {
+      let user = this;
       user.roleMappings.create({
         principalType: 'USER',
         roleId: role.id,
@@ -111,11 +112,13 @@ module.exports = function (BaseUser) {
     };
 
     UserModel.prototype.createRoleByName = function (roleName, cb) {
+      console.log(`createRoleByName called`);
+
       let user = this;
 
       UserModel.app.models.Role.findOrCreate({where: {name: roleName}}, {name: roleName})
         .then(role => {
-          user.createUserRole(role[0], user, cb);
+          user.createUserRole(role[0], cb);
         }, console.error);
     };
 
