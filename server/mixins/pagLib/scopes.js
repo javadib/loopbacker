@@ -46,7 +46,7 @@ module.exports = function (Model, options) {
           Model[`__count__${key}`](callback);
         },
         filteredCount: function(callback) {
-          Model.count(filter.where, callback);
+          Model[`__count__${key}`](filter.where, callback);
         },
         data: function(callback) {
           Model.find(filter, callback);
