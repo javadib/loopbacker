@@ -23,7 +23,7 @@ module.exports = function (Model, options) {
 
   let {scopes = {}} = options;
   let relKeys = scopes === '*' || scopes === 'all' ?
-    Object.keys(settings.scopes) :
+    Object.keys(settings.scopes || {}) :
     Object.keys(scopes).filter(key => scopes[key]);
 
   //entry point
