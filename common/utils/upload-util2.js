@@ -5,6 +5,8 @@ const path = require('path');
 const crypto = require('crypto');
 const async = require('async');
 const error = require("./error-provider");
+const exif = require("./exif");
+
 
 exports.hashFileName = function (file) {
   const fileSHA256 = crypto.createHash('md5').update(file.buffer).digest("hex");
@@ -34,7 +36,7 @@ function renameFile(fileInfo, basePath, renameTo) {
   }
 }
 
-exports.saveFile = function(basePath, fileObject, options, cb) {
+exports.saveFile = function (basePath, fileObject, options, cb) {
   if (!fileObject) {
     return cb(error.validateError('هیج فایلی برای اپلود انتخاب نشده است.'));
   }
@@ -47,8 +49,6 @@ exports.saveFile = function(basePath, fileObject, options, cb) {
     fs.mkdirSync(basePath);
   }
 
-
-
   const newPath = renameFile(fileObject, basePath, options.renameTo);
   const fileName = path.basename(newPath);
 
@@ -57,11 +57,15 @@ exports.saveFile = function(basePath, fileObject, options, cb) {
     let data = {
       key: fileObject.fieldname,
       fileName: newPath,
-      relativeFileName : relativeFileName,
+      relativeFileName: relativeFileName,
       additionalData: options.additionalData || undefined
     };
 
-    return err ? cb && cb(err) : cb && cb(null, data);
+    exif.parseStream(fileObject.buffer).then(exData => {
+      data.exifData = exData;
+      return err ? cb && cb(err) : cb && cb(null, data);
+    }).catch(exErr => err ? cb && cb(err) : cb && cb(null, data));
+
   });
 };
 
@@ -92,7 +96,6 @@ exports.saveFiles = function (req, storage, options = {}, cb) {
 
   return async.parallel(tasks, cb);
 };
-
 
 
 module.exports = exports;

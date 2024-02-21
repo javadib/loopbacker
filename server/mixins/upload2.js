@@ -31,6 +31,7 @@ module.exports = function(Model, Options) {
         let fields = Options.fields === '*' ?
           Object.keys(properties) : Object.keys(Options.fields) || [];
 
+        ctx.args.options.uploadResult = result;
         fields.forEach(key => {
           let files = result.filter(p => p.key === key);
 
