@@ -2,7 +2,7 @@
 
 const uploadUtil = require('../../common/utils/upload-util2');
 
-module.exports = function(Model, Options) {
+module.exports = function (Model, Options) {
   require('./upload2/')(Model, Options);
 
   Options.keepValue = Options.keepValue || true;
@@ -11,7 +11,7 @@ module.exports = function(Model, Options) {
     Options.methodName : [Options.methodName];
 
   methods.forEach(methodName => {
-    Model.beforeRemote(methodName, function(ctx, unused, next) {
+    Model.beforeRemote(methodName, function (ctx, unused, next) {
       let req = ctx.req;
       let storage = Model.app.dataSources[Options.storage];
 
@@ -21,7 +21,7 @@ module.exports = function(Model, Options) {
         req.files[i].id = i;
       }
 
-      uploadUtil.saveFiles(req, storage, Options, function(err, result) {
+      uploadUtil.saveFiles(req, storage, Options, function (err, result) {
         if (err) return next(err);
 
         let body = ctx.args.data || req.body;
@@ -31,7 +31,10 @@ module.exports = function(Model, Options) {
         let fields = Options.fields === '*' ?
           Object.keys(properties) : Object.keys(Options.fields) || [];
 
-        ctx.args.options.uploadResult = result;
+        let uploadResult = {}
+        result.forEach(p => uploadResult[[p.key]] = p);
+        ctx.args.options.uploadResult = uploadResult;
+
         fields.forEach(key => {
           let files = result.filter(p => p.key === key);
 
@@ -43,10 +46,10 @@ module.exports = function(Model, Options) {
               Array.isArray(body[key]) ? body[key].concat(fileNames) :
                 body[key] = fileNames;
             } else {
-              body[key] = fileNames[fileNames.length -1];
+              body[key] = fileNames[fileNames.length - 1];
             }
           } else {
-            files = files[files.length -1];
+            files = files[files.length - 1];
             let beDeleted = delKeys.indexOf(body[key]) >= 0;
 
             if (beDeleted) {
@@ -74,7 +77,7 @@ module.exports = function(Model, Options) {
     });
   });
 
-  Model.observe('before save', function(ctx, next) {
+  Model.observe('before save', function (ctx, next) {
     if (ctx.isNewInstance) {
       ctx.instance.unsetAttribute('options');
     } else {
