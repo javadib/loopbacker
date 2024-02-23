@@ -27,7 +27,7 @@ module.exports = function (Model, Options) {
         filter.fields = method.fields;
       }
 
-      Model.find(filter, cb && cb);
+      Model.findWithPagination({}, filter, cb && cb);
     };
 
     if (remote) {
@@ -38,7 +38,7 @@ module.exports = function (Model, Options) {
             http: {path: `/${httpPath}`, verb: 'get'},
             accepts: [
               {
-                arg: 'keyword', type: 'string', required: false, http: {source: 'query'},
+                arg: 'keyword', type: 'string', required: true, http: {source: 'query'},
               },
             ],
             returns: {

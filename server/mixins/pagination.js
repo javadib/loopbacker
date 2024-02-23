@@ -6,6 +6,7 @@ module.exports = function(Model, options) {
 
   require('./pagLib/header')(Model, options);
   require('./pagLib/relation')(Model, options);
+  require('./pagLib/scopes')(Model, options);
 
   options.methodName = options.methodName || 'findWithPagination';
 
