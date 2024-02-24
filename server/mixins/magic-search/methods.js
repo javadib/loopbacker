@@ -5,10 +5,19 @@ const {func} = require("joi");
 
 module.exports = function (Model, options) {
   options.limit = options.limit || 10;
-  options.methodName = options.methodName || 'findWithPagination';
-  const settings = Model.definition.settings;
+  options.methodName = options.methodName || 'search';
 
-  Model.buildSearch = function (key, method, filter, httpPath, opt = {remote: true}) {
+  Model.buildOrClause = function (method, keyword) {
+    let orString = JSON.stringify(method.or);
+    let orClause = orString.replace(/{keyword}/g, keyword);
+    let or = JSON.parse(orClause);
+
+    return Object.keys(or).map(key => {return {[key]: or[key]}});
+  };
+
+  Model.buildSearch = function (key, method, filter, opt = {remote: true}) {
+    let httpPath = method.path || key;
+
     Model[key] = function (keyword, cb) {
       if (keyword && method.or) {
         let orClause = Model.buildOrClause(method, keyword);

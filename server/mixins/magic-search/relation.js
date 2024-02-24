@@ -2,20 +2,13 @@
 
 const async = require('async');
 
-module.exports = function(Model, options) {
-  options.limit = options.limit || 10;
-  options.methodName = options.methodName || 'findWithPagination';
+module.exports = function (Model, Options) {
+  let {remote = true} = Options.methods;
+  Options.limit = Options.limit || 10;
+  Options.methodName = Options.methodName || 'search';
   const settings = Model.definition.settings;
 
-  Model.getRelationKeys = function(type) {
-    let relations = settings.relations || {};
-
-    return Object.keys(relations)
-      .filter(key => relations[key].type === type)
-      .map(p => p);
-  };
-
-  Model.getRelationKeys2 = function(types = []) {
+  Model.getRelationKeys2 = function (types = []) {
     let relations = settings.relations || {};
 
     return Object.keys(relations)
@@ -23,15 +16,15 @@ module.exports = function(Model, options) {
       .map(p => p);
   };
 
-  let {relations = {}} = options;
+  //entry point
+  let {relations = {}} = Options;
   let relKeys = relations === '*' || relations === 'all' ?
     Model.getRelationKeys2(['hasMany', 'referencesMany']) :
     Object.keys(relations).filter(key => relations[key]);
 
-  //entry point
   relKeys.forEach(key => {
-    let httpPath = `/${key}/${options.methodName}`;
-    let methodName = `__${options.methodName}__${key}`;
+    let httpPath = `/${key}/${Options.methodName}`;
+    let methodName = `__${Options.methodName}__${key}`;
     let relation = settings.relations[key];
 
     if (!relation) {
@@ -39,65 +32,45 @@ module.exports = function(Model, options) {
       throw new Error(msg);
     }
 
-    Model.prototype[methodName] = function(ctx, filter = {}, cb) {
+    let filter = {where: {or: []}};
+    let method = Options.relations[key]?.method || filter;
+    method.path = httpPath;
+
+    Model.prototype[methodName] = function (ctx, keywords, cb) {
       let model = this;
-      filter.where = filter.where || {};
-      let fkModel = Model.app.models[relation.model];
-      let fkModelCount = Model.app.models[relation.through || relation.model];
-      // filter.where[relation.foreignKey] = ctx.ctorArgs && ctx.ctorArgs.id;
-      filter.limit = filter.limit || options.limit;
+      let lFilter = Object.assign({}, filter);
 
-      async.parallel({
-        totalCount: function(callback) {
-          fkModel.count(callback);
-        },
-        filteredCount: function(callback) {
-          model[key].count(filter.where, callback);
-        },
-        data: function(callback) {
-          model[key].find(filter, callback);
-        },
-      }, function(err, result) {
-        if (err) return cb && cb(err);
+      if (keywords && method.or) {
+        let orClause = Model.buildOrClause(method, keywords);
 
-        let res = {
-          totalCount: result.totalCount,
-          filteredCount: result.filteredCount,
-          data: result.data,
-        };
+        lFilter.where.or = orClause;
+      }
 
-        if (options.header) {
-          let fkOptions = fkModel.definition.settings.mixins.Pagination;
-          res.headers = Model.makeHeaders(fkModel, fkOptions, filter);
-        }
+      if (lFilter.where.or.length <= 0) {
+        delete lFilter.where.or;
+      }
 
-        cb && cb(null, res);
-      });
+      if (method.fields) {
+        lFilter.fields = method.fields;
+      }
+
+      model[`__findWithPagination__${key}`](ctx, lFilter, cb && cb);
     };
 
     Model.remoteMethod(
       methodName, {
         isStatic: false,
-        description: 'Find all instances of the model matched by filter from the data source.',
+        description: 'search model with keyword',
         http: {path: httpPath, verb: 'get'},
         accepts: [
           {arg: 'ctx', type: 'object', http: {source: 'context'}},
-          {
-            arg: 'filter',
-            type: 'object',
-            required: false,
-            http: {source: 'query'},
-          },
+          {arg: 'keywords', type: 'string', required: true, http: {source: 'query'}},
         ],
         returns: {
-          arg: 'result',
-          type: relation.model,
-          root: true,
-          description: 'Find all instances of the model matched by filter from the data source.',
-        },
+          arg: 'result', type: relation.model, root: true, description: 'List of matches keyword result set.',
+        }
       }
     );
-
   });
 };
 
