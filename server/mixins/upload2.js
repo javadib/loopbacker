@@ -33,6 +33,7 @@ module.exports = function (Model, Options) {
 
         let uploadResult = {}
         result.forEach(p => uploadResult[[p.key]] = p);
+        ctx.args.options = ctx.args.options || {};
         ctx.args.options.uploadResult = uploadResult;
 
         fields.forEach(key => {
