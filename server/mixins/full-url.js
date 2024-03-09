@@ -27,7 +27,7 @@ module.exports = function(Model, options) {
 
       if (data && data[key]) {
         if (field.isArray) {
-          let arr = Array.isArray(data[name]) ? data[name] : JSON.parse(data[name]);
+          let arr = Array.isArray(data[name]) ? data[name] : data[key]?.split(","); //JSON.parse(data[name]);
 
           data[name] = arr.map(p => url.resolve(baseUrl, p));
         } else {
