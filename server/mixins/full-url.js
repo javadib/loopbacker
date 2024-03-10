@@ -49,7 +49,7 @@ module.exports = function(Model, options) {
     if (ctx.isNewInstance) {
       ctx.instance.unsetAttribute('options');
     } else {
-      delete ctx.data.options;
+      delete ctx.data?.options;
     }
 
     next();
