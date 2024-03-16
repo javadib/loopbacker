@@ -12,6 +12,8 @@ module.exports = function (Model, Options) {
 
   methods.forEach(methodName => {
     Model.beforeRemote(methodName, function (ctx, unused, next) {
+      console.log(methodName);
+
       let req = ctx.req;
       let storage = Model.app.dataSources[Options.storage];
 
