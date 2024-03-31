@@ -49,7 +49,7 @@ module.exports = function(Model, options) {
 
       async.parallel({
         totalCount: function(callback) {
-          fkModel.count(callback);
+          model[key].count(callback);
         },
         filteredCount: function(callback) {
           model[key].count(filter.where, callback);
