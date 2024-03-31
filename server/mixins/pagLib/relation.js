@@ -48,11 +48,15 @@ module.exports = function(Model, options) {
       filter.limit = filter.limit || options.limit;
 
       async.parallel({
-        totalCount: function(callback) {
-          model[key].count(callback);
+        totalCount: function (callback) {
+          relation.type === "referencesMany" ?
+            callback(null, model[relation.foreignKey].length) :
+            model[key].count(callback);
         },
         filteredCount: function(callback) {
-          model[key].count(filter.where, callback);
+          relation.type === "referencesMany" ?
+            callback(null, model[relation.foreignKey].length) :
+            model[key].count(filter.where, callback);
         },
         data: function(callback) {
           model[key].find(filter, callback);
@@ -62,7 +66,9 @@ module.exports = function(Model, options) {
 
         let res = {
           totalCount: result.totalCount,
-          filteredCount: result.filteredCount,
+          filteredCount: relation.type === "referencesMany" ?
+            result.data.length :
+            result.filteredCount,
           data: result.data,
         };
 
