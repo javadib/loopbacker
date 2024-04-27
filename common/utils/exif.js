@@ -8,7 +8,7 @@ const handler =  {};
 
 function parseInternal(stream, cb) {
   return new Promise((resolve, reject) => {
-    exif.metadata(stream, function (err, metadata) {
+    exif.metadata(stream, ["-n"], function (err, metadata) {
       cb && cb(err, metadata);
 
       return err ? reject(err) : resolve(metadata);
@@ -21,20 +21,6 @@ handler.parse = function (filename, cb) {
   return fsProm.readFile(filename)
     .then(data => parseInternal(data, cb))
     .catch(err => {cb && cb(err); return Promise.reject(err)})
-
-  // return new Promise((resolve, reject) => {
-  //   fsProm.readFile(filename)
-  //     .then(data => {
-  //       exif.metadata(data, function (err, metadata) {
-  //         cb && cb(err, metadata);
-  //         return err ? reject(err) : resolve(metadata);
-  //       });
-  //     })
-  //     .catch(err => {
-  //       cb && cb(err);
-  //       return reject(err)
-  //     })
-  // })
 };
 
 
