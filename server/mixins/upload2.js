@@ -34,7 +34,10 @@ module.exports = function (Model, Options) {
           Object.keys(properties) : Object.keys(Options.fields) || [];
 
         let uploadResult = {}
-        result.forEach(p => uploadResult[[p.key]] = p);
+        result.forEach(p => {
+          delete p.additionalData?.buffer;
+          uploadResult[[p.key]] = p
+        });
         ctx.args.options = ctx.args.options || {};
         ctx.args.options.uploadResult = uploadResult;
 
@@ -64,8 +67,9 @@ module.exports = function (Model, Options) {
               if (urlFileName) {
                 let field = Options.fields[key];
                 if (field.isArray) {
-                  Array.isArray(body[key]) ? body[key].push(urlFileName) :
-                    body[key] = [urlFileName];
+                  body.__data
+                  Array.isArray(body[key]) ? body.__data[key].push(urlFileName) :
+                    body.__data[key] = [urlFileName];
                 } else {
                   body[key] = urlFileName;
                 }
