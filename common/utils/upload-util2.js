@@ -63,8 +63,8 @@ exports.saveFile = function (basePath, fileObject, options, cb) {
 
     exif.parseStream(fileObject.buffer).then(exData => {
       data.exifData = exData;
-      return err ? cb && cb(err) : cb && cb(null, data);
-    }).catch(exErr => err ? cb && cb(err) : cb && cb(err));
+      return cb && cb(null, data);
+    }).catch(exErr => cb && cb(exErr));
 
   });
 };

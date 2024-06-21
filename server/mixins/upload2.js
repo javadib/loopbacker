@@ -67,9 +67,8 @@ module.exports = function (Model, Options) {
               if (urlFileName) {
                 let field = Options.fields[key];
                 if (field.isArray) {
-                  body.__data
-                  Array.isArray(body[key]) ? body.__data[key].push(urlFileName) :
-                    body.__data[key] = [urlFileName];
+                  Array.isArray(body[key]) ? body[key].push(urlFileName) :
+                    body[key] = [urlFileName];
                 } else {
                   body[key] = urlFileName;
                 }
