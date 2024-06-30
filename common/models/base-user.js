@@ -153,7 +153,7 @@ module.exports = function (BaseUser) {
      * @return {void}
      */
     UserModel.loginWithCode = function (ctx, credentials, cb) {
-      let inDev = ctx.req.query?.inDev && process.env.NODE_ENV !== 'prodduction';
+      let inDev = ctx.req.query?.inDev && process.env.NODE_ENV !== 'production';
       let defaultError = new Error(error.codes.LOGIN_FAILED);
       defaultError.statusCode = 422;
 
